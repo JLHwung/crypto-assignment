@@ -4,10 +4,16 @@ import (
 	"crypto/aes"
 	"encoding/hex"
 	"crypto/cipher"
-	"fmt"
 )
 
-func CBC_decrypt (keyStr string, ciphertextStr string) {
+// UnPKCS7Padding undo the PKCS7 Padding
+func UnPKCS7Padding(data []byte) []byte {
+	length := len(data)
+	padding := int(data[length-1])
+	return data[:(length - padding)]
+}
+
+func CBC_decrypt (keyStr string, ciphertextStr string) []byte {
 	key, _ := hex.DecodeString(keyStr)
 	ciphertext, _ := hex.DecodeString(ciphertextStr)
 
@@ -23,10 +29,10 @@ func CBC_decrypt (keyStr string, ciphertextStr string) {
 
 	mode.CryptBlocks(ciphertext, ciphertext)
 
-	fmt.Printf("%s\n", ciphertext)
+	return UnPKCS7Padding(ciphertext)
 }
 
-func CTR_decrypt (keyStr string, ciphertextStr string) {
+func CTR_decrypt (keyStr string, ciphertextStr string) []byte {
 	key, _ := hex.DecodeString(keyStr)
 	ciphertext, _ := hex.DecodeString(ciphertextStr)
 
@@ -42,5 +48,5 @@ func CTR_decrypt (keyStr string, ciphertextStr string) {
 
 	stream.XORKeyStream(ciphertext, ciphertext)
 
-	fmt.Printf("%s\n", ciphertext)
+	return ciphertext
 }
