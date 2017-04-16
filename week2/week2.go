@@ -2,8 +2,8 @@ package week2
 
 import (
 	"crypto/aes"
-	"encoding/hex"
 	"crypto/cipher"
+	"encoding/hex"
 )
 
 // UnPKCS7Padding undo the PKCS7 Padding
@@ -13,7 +13,7 @@ func UnPKCS7Padding(data []byte) []byte {
 	return data[:(length - padding)]
 }
 
-func CBC_decrypt (keyStr string, ciphertextStr string) []byte {
+func CBC_decrypt(keyStr string, ciphertextStr string) []byte {
 	key, _ := hex.DecodeString(keyStr)
 	ciphertext, _ := hex.DecodeString(ciphertextStr)
 
@@ -32,7 +32,7 @@ func CBC_decrypt (keyStr string, ciphertextStr string) []byte {
 	return UnPKCS7Padding(ciphertext)
 }
 
-func CTR_decrypt (keyStr string, ciphertextStr string) []byte {
+func CTR_decrypt(keyStr string, ciphertextStr string) []byte {
 	key, _ := hex.DecodeString(keyStr)
 	ciphertext, _ := hex.DecodeString(ciphertextStr)
 

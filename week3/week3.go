@@ -1,9 +1,9 @@
 package week3
 
 import (
-	"os"
 	"crypto/sha256"
 	"io"
+	"os"
 )
 
 func check(e error) {
@@ -14,8 +14,8 @@ func check(e error) {
 
 // FileAuth returns the Authentication Code of given file generated as
 /**
-	Now, a browser downloads the file F one block at a time, where each block includes the appended hash value from the diagram above. When the first block (B0 ∥∥ h1) is received the browser checks that H(B0 ∥∥ h1) is equal to h0 and if so it begins playing the first video block. When the second block (B1 ∥∥ h2) is received the browser checks that H(B1 ∥ h2) is equal to h1 and if so it plays this second block. This process continues until the very last block. This way each block is authenticated and played as it is received and there is no need to wait until the entire file is downloaded.
- */
+Now, a browser downloads the file F one block at a time, where each block includes the appended hash value from the diagram above. When the first block (B0 ∥∥ h1) is received the browser checks that H(B0 ∥∥ h1) is equal to h0 and if so it begins playing the first video block. When the second block (B1 ∥∥ h2) is received the browser checks that H(B1 ∥ h2) is equal to h1 and if so it plays this second block. This process continues until the very last block. This way each block is authenticated and played as it is received and there is no need to wait until the entire file is downloaded.
+*/
 func FileAuth(path string) [32]byte {
 	f, err := os.Open(path)
 	check(err)
@@ -35,7 +35,7 @@ func FileAuth(path string) [32]byte {
 
 	var chunkNumber int64 = fileSize / CHUNK_SIZE
 	lastChunkSize := fileSize % CHUNK_SIZE
-	if (lastChunkSize == 0) {
+	if lastChunkSize == 0 {
 		lastChunkSize = CHUNK_SIZE
 		chunkNumber -= 1
 	}
@@ -45,15 +45,15 @@ func FileAuth(path string) [32]byte {
 	check(err)
 
 	_, err = f.Read(buf)
-	if (err != io.EOF) {
+	if err != io.EOF {
 		check(err)
 	}
 	var bufArr []byte = buf[:lastChunkSize]
 	hashBuf := sha256.Sum256(bufArr)
 
-	var offset int64 = - lastChunkSize - CHUNK_SIZE
+	var offset int64 = -lastChunkSize - CHUNK_SIZE
 	for ; offset >= -fileSize; offset -= CHUNK_SIZE {
-		_, err = f.Seek(offset, 2);
+		_, err = f.Seek(offset, 2)
 		check(err)
 		_, err = f.Read(buf)
 		check(err)
@@ -61,6 +61,6 @@ func FileAuth(path string) [32]byte {
 		hashBuf = sha256.Sum256(append(bufArr, hashBuf[:]...))
 	}
 
-	return hashBuf;
+	return hashBuf
 
 }
