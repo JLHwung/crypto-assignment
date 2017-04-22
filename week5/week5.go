@@ -3,6 +3,7 @@ package week5
 import (
 	"math/big"
 	"log"
+	"errors"
 )
 
 // DLog computes the discrete log modulo a prime p using Man-in-The-Middle attack.
@@ -38,5 +39,5 @@ func DLog(x, y, m *big.Int, bitLen uint) (int64, error) {
 		bigPower.Mod(bigPower, m)
 	}
 
-	return 0, nil;
+	return 0, errors.New("Can not find valid logarithm! May be you have to increas bitLen");
 }
