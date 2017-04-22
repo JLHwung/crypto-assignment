@@ -7,46 +7,36 @@ import (
 
 // DLog computes the discrete log modulo a prime p using Man-in-The-Middle attack.
 // That is, computes z such that x^z = y (mod m)
-func DLog(x, y, m *big.Int, bitLen int) *big.Int {
-	one := big.NewInt(1)
-
-	var middleNumber *big.Int = new(big.Int)
-	middleNumber.Lsh(one, uint(bitLen / 2))
+func DLog(x, y, m *big.Int, bitLen uint) (int64, error) {
+	middleNumber := int64(1 << (bitLen / 2))
 
 	log.Println("Building Hash Table...")
-	hashTable := make(map[string]*big.Int, middleNumber.Int64())
+	hashTable := make(map[string]int64, middleNumber)
 
-	xInverse := new(big.Int)
-	xInverse.ModInverse(x, m)
+	xInverse := new(big.Int).ModInverse(x, m)
 
-	power := new(big.Int)
-	power.Set(y)
-	hashTable[power.String()] = big.NewInt(0)
+	power := new(big.Int).Set(y)
+	hashTable[power.String()] =0
 
-	for i := big.NewInt(1); i.Cmp(middleNumber) == -1; i.Add(i, one) {
+	for i := int64(1); i < middleNumber; i++ {
 		power.Mul(power, xInverse)
 		power.Mod(power, m)
-		hashTable[power.String()] = new(big.Int).Set(i)
+		hashTable[power.String()] = i
 	}
 
 	log.Println("Searching Hash Table...")
 
-	xPowerMiddleNumber := new(big.Int)
-	xPowerMiddleNumber.Exp(x, middleNumber, m)
+	middleNumberBigInt := new(big.Int).SetInt64(middleNumber)
+	xPowerMiddleNumber := new(big.Int).Exp(x, middleNumberBigInt, m)
 
 	bigPower := big.NewInt(1)
-	for i := big.NewInt(0); i.Cmp(middleNumber) == -1; i.Add(i, one) {
+	for i := int64(0); i < middleNumber; i++ {
 		if needle, ok := hashTable[bigPower.String()]; ok {
-			result := new(big.Int);
-			result.Mul(i, middleNumber)
-			result.Mod(result, m)
-			result.Add(result, needle)
-			result.Mod(result, m)
-			return result;
+			return i * middleNumber + needle, nil;
 		}
 		bigPower.Mul(bigPower, xPowerMiddleNumber)
 		bigPower.Mod(bigPower, m)
 	}
 
-	return nil;
+	return 0, nil;
 }
