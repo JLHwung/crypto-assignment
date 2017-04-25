@@ -1,8 +1,9 @@
 package week6
 
 import (
-	"math/big"
+	"crypto/rsa"
 	"errors"
+	"math/big"
 )
 
 func isSquareNumber(n *big.Int) (bool, *big.Int) {
@@ -12,25 +13,25 @@ func isSquareNumber(n *big.Int) (bool, *big.Int) {
 }
 
 /* FactorCloselyFactorSemiPrime finds p, q such that
-	N = p*q when |p - q| < 2N^{1/4} and p <= q
- */
+N = p*q when |p - q| < 2N^{1/4} and p <= q
+*/
 func FactorCloselyFactorSemiPrime(N *big.Int) (*big.Int, *big.Int, error) {
 	return FactorNearlyFactorSemiPrime(N, 0)
 }
 
 /* FactorCloselyFactorSemiPrime finds p, q such that
-	N = p*q when |p - q| < 2^{magnitude + 1} N^{1/4} and p <= q
-	Notice that when magnitude = 1, it reduces to `FactorCloselyFactorSemiPrime`
- */
+N = p*q when |p - q| < 2^{magnitude + 1} N^{1/4} and p <= q
+Notice that when magnitude = 1, it reduces to `FactorCloselyFactorSemiPrime`
+*/
 
 func FactorNearlyFactorSemiPrime(N *big.Int, magnitude uint) (*big.Int, *big.Int, error) {
 	return FactorProportionalFactorSemiPrime(N, magnitude, big.NewRat(1, 1))
 }
 
 /* FactorProportionalFactorSemiPrime finds p, q such that
-	N = p*q when |ap - bq| < 2^{magnitude + 1} N^{1/4}, λ = a/b is a rational number
-	Notice that when a = b = 1, it reduces to `FactorNearlyFactorSemiPrime`
- */
+N = p*q when |ap - bq| < 2^{magnitude + 1} N^{1/4}, λ = a/b is a rational number
+Notice that when a = b = 1, it reduces to `FactorNearlyFactorSemiPrime`
+*/
 func FactorProportionalFactorSemiPrime(N *big.Int, magnitude uint, proportion *big.Rat) (*big.Int, *big.Int, error) {
 	// extract λ = a/b s.t. a, b is even
 	num := proportion.Num()
@@ -50,7 +51,7 @@ func FactorProportionalFactorSemiPrime(N *big.Int, magnitude uint, proportion *b
 	Difference := new(big.Int).Sub(AvgGuessSqaure, numDenomN)
 	one := big.NewInt(1)
 
-	for i := 0; i < (1 << ( magnitude + magnitude)); i++ {
+	for i := 0; i < (1 << (magnitude + magnitude)); i++ {
 		// increment Difference by 2*A_guess + 1
 		Difference.Add(Difference, AvgGuess)
 		Difference.Add(Difference, AvgGuess)
@@ -80,4 +81,31 @@ func FactorProportionalFactorSemiPrime(N *big.Int, magnitude uint, proportion *b
 	}
 
 	return nil, nil, errors.New("The factor is not closely enough for efficient factoring")
+}
+
+func DecryptRSAPKCSv15WithCloselyFactor(pubKey *rsa.PublicKey, cipherText []byte) ([]byte, error) {
+	p, q, err := FactorCloselyFactorSemiPrime(pubKey.N)
+	one := big.NewInt(1)
+	if err != nil {
+		panic(err)
+	}
+
+	Primes := make([]*big.Int, 2)
+	Primes[0] = p
+	Primes[1] = q
+
+	// Compute Euler Function φ(N) = (p - 1)(q - 1)
+	pSub1 := new(big.Int).Sub(p, one)
+	qSub1 := new(big.Int).Sub(q, one)
+	phi := new(big.Int).Mul(pSub1, qSub1)
+	// Compute Private Component from E, φ(N)
+	D := new(big.Int)
+	new(big.Int).GCD(D, new(big.Int), big.NewInt(int64(pubKey.E)), phi)
+
+	privateKey := new(rsa.PrivateKey)
+	privateKey.PublicKey = *pubKey
+	privateKey.D = D
+	privateKey.Primes = Primes
+
+	return rsa.DecryptPKCS1v15(nil, privateKey, cipherText)
 }
