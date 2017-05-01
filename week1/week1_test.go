@@ -23,47 +23,47 @@ func ExampleGuessManyTimePadding() {
 
 	cracker.FindFirstHeuristic(" the ")
 
-	_ = cracker.ExpandHeuristic(5, 58, " secret")
+	cracker.ExpandHeuristic(5, 58, " secret")
 
 	cracker.ValidateHeuristic(58, "se the ")
 
-	_ = cracker.ExpandHeuristic(1, 57, " corner ")
+	cracker.ExpandHeuristic(1, 57, " corner ")
 
 	cracker.ValidateHeuristic(56, " use the ")
 
-	_ = cracker.ExpandHeuristic(6, 51, " the Government ")
+	cracker.ExpandHeuristic(6, 51, " the Government ")
 
 	cracker.ValidateHeuristic(50, " never use the key ")
 
-	_ = cracker.ExpandHeuristic(3, 44, " algorithm looks as good as ")
+	cracker.ExpandHeuristic(3, 44, " algorithm looks as good as ")
 
 	cracker.ValidateHeuristic(42, " cipher, never use the key more than ")
 
-	_ = cracker.ExpandHeuristic(1, 39, " theorem becomes a corner stone of crypt")
+	cracker.ExpandHeuristic(1, 39, " theorem becomes a corner stone of crypt")
 
 	cracker.ValidateHeuristic(35, " stream cipher, never use the key more than once")
 
-	_ = cracker.ExpandHeuristic(0, 32, " quantum computers. We can also factor the number 1")
+	cracker.ExpandHeuristic(0, 32, " quantum computers. We can also factor the number 1")
 
 	cracker.ValidateHeuristic(30, "ing a stream cipher, never use the key more than once")
 
-	_ = cracker.ExpandHeuristic(6, 26, "tography: one that allows the Government to use brute for")
+	cracker.ExpandHeuristic(6, 26, "tography: one that allows the Government to use brute for")
 
 	cracker.ValidateHeuristic(22, " When using a stream cipher, never use the key more than once")
 
-	_ = cracker.ExpandHeuristic(9, 19, "Dictionary (2006) deﬁnes crypto as the art of  writing o r sol")
+	cracker.ExpandHeuristic(9, 19, "Dictionary (2006) deﬁnes crypto as the art of  writing o r sol")
 
 	cracker.ValidateHeuristic(19, "is: When using a stream cipher, never use the key more than once")
 
-	_ = cracker.ExpandHeuristic(8, 17, "encryption scheme states 3 algorithms, namely a procedure for gene")
+	cracker.ExpandHeuristic(8, 17, "encryption scheme states 3 algorithms, namely a procedure for gene")
 
 	cracker.ValidateHeuristic(17, "e is: When using a stream cipher, never use the key more than once")
 
-	_ = cracker.ExpandHeuristic(3, 14, " produced by a weak encryption algorithm looks as good as ciphertext")
+	cracker.ExpandHeuristic(3, 14, " produced by a weak encryption algorithm looks as good as ciphertext")
 
 	cracker.ValidateHeuristic(10, " message is: When using a stream cipher, never use the key more than once")
 
-	_ = cracker.ExpandHeuristic(0, 6, " factor the number 15 with quantum computers. We can also factor the number 1")
+	cracker.ExpandHeuristic(0, 6, " factor the number 15 with quantum computers. We can also factor the number 1")
 
 	pt := cracker.ValidateHeuristic(0, "The secret message is: When using a stream cipher, never use the key more than once")
 
