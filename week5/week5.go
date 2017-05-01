@@ -39,5 +39,5 @@ func DLog(x, y, m *big.Int, bitLen uint) (int64, error) {
 		bigPower.Mod(bigPower, m)
 	}
 
-	return 0, errors.New("Can not find valid logarithm! May be you have to increas bitLen");
+	return 0, errors.New("Can not find valid logarithm! Maybe you have to increase bitLen");
 }
