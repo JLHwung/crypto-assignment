@@ -2,11 +2,11 @@ package week1
 
 import (
 	"encoding/hex"
-	"unicode/utf8"
 	"log"
+	"unicode/utf8"
 )
 
-func checkError (err error) {
+func checkError(err error) {
 	if err != nil {
 		panic(err)
 	}
@@ -23,11 +23,11 @@ func safeXORBytes(dst, a, b []byte) int {
 	return n
 }
 
-type ManyTimePaddingInteractiveCracker struct{
-	target string
-	targetText []byte
+type ManyTimePaddingInteractiveCracker struct {
+	target           string
+	targetText       []byte
 	cipherTextString []string
-	XORedText [][]byte
+	XORedText        [][]byte
 }
 
 // Initialize preprocess the Cracker by computing the XORedText of every cipherText xor targetText
@@ -50,7 +50,7 @@ func (c *ManyTimePaddingInteractiveCracker) Initialize() {
 
 // FindFirstHeuristic iterates on targetText to find given heuristic, typically we use ` the ` as fragment
 func (c *ManyTimePaddingInteractiveCracker) FindFirstHeuristic(fragment string) {
-	for index := 0;  index < len(c.targetText) - len(fragment); index++ {
+	for index := 0; index < len(c.targetText)-len(fragment); index++ {
 		c.ValidateHeuristic(index, fragment)
 	}
 }
@@ -88,16 +88,16 @@ func validateHeuristic(XORedText [][]byte, index int, fragmentString string) ([]
 	fragment := []byte(fragmentString)
 	fragmentLength := len(fragment)
 	var guessResult [][]byte
-	positive := true;
+	positive := true
 
 	for i := 0; i < len(XORedText); i++ {
 		dst := make([]byte, fragmentLength)
 
 		var fragmentText []byte
-		if index + fragmentLength >= len(XORedText[i]) {
+		if index+fragmentLength >= len(XORedText[i]) {
 			fragmentText = XORedText[i][index:]
 		} else {
-			fragmentText = XORedText[i][index:index+fragmentLength]
+			fragmentText = XORedText[i][index : index+fragmentLength]
 		}
 		safeXORBytes(dst, fragmentText, fragment)
 		guessResult = append(guessResult, dst)
@@ -121,14 +121,12 @@ func expandHeuristic(SomeXORedText []byte, index int, plaintextFragmentString st
 	ptFragmentLength := len(ptFragment)
 	dst := make([]byte, ptFragmentLength)
 	var fragmentText []byte
-	if index + ptFragmentLength >= len(SomeXORedText) {
+	if index+ptFragmentLength >= len(SomeXORedText) {
 		fragmentText = SomeXORedText[index:]
 	} else {
-		fragmentText = SomeXORedText[index:index+ptFragmentLength]
+		fragmentText = SomeXORedText[index : index+ptFragmentLength]
 	}
 	safeXORBytes(dst, fragmentText, ptFragment)
 
 	return dst
 }
-// heuristic:
-// 60, " the "
