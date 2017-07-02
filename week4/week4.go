@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"time"
+	"sync"
 )
 
 func safeXORBytes(dst, a, b []byte) int {
@@ -68,6 +69,7 @@ func PaddingOracle(victim string) string {
 	check(err)
 	blockNumber := len(victimBytes) / aes.BlockSize
 	plaintext := make([]byte, (blockNumber-1)*aes.BlockSize)
+	mu := sync.Mutex{}
 
 	for blockIndex := blockNumber - 2; blockIndex >= 0; blockIndex-- {
 		for byteIndex := aes.BlockSize - 1; byteIndex >= 0; byteIndex-- {
@@ -100,6 +102,8 @@ func PaddingOracle(victim string) string {
 					// if the StatusCode is 404, the padding is good but the format is malformed
 					// if the StatusCode is 200 and the paddingCount is as specified,
 					// it is exactly the orignal ciphertext so we shall include this situation
+					mu.Lock()
+					defer mu.Unlock()
 					if resp.StatusCode == 404 || (resp.StatusCode == 200 && paddingCount == int(plaintext[len(plaintext)-1])) {
 						log.Println(guessByte, injectIndex, resp.StatusCode)
 						ch <- guessByte
