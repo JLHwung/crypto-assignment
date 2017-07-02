@@ -43,6 +43,8 @@ func addPkcs7(data []byte, blockSize int) []byte {
 	return append(data, generatePKCS7Padding(paddingCount)...)
 }
 
+// GenerateCipherTextOnShortAES takes a plaintext/ciphertext pair and returns a new ciphertext corresponding to the target
+// assuming the encryption mode is short AES block with PKCS7 padding scheme
 func GenerateCipherTextOnShortAES(plaintext, ciphertext, target string) string {
 	cipherTextBytes, err := hex.DecodeString(ciphertext)
 	check(err)
@@ -58,12 +60,14 @@ func GenerateCipherTextOnShortAES(plaintext, ciphertext, target string) string {
 	diff := make([]byte, len(paddedPlaintext))
 	safeXORBytes(diff, paddedPlaintext, paddedTarget)
 	safeXORBytes(newIv, iv, diff)
-	var newIvBuf []byte = newIv[:]
+	var newIvBuf = newIv[:]
 	newCipherText := hex.EncodeToString(append(newIvBuf, ciphertextWithoutIV[:]...))
 	return newCipherText
 
 }
 
+// PaddingOracle takes victim string and send out numerous request to https://crypto-class.appspot.com to play a padding
+// oracle attack.
 func PaddingOracle(victim string) string {
 	victimBytes, err := hex.DecodeString(victim)
 	check(err)
@@ -82,7 +86,7 @@ func PaddingOracle(victim string) string {
 			for guess := 0x00; guess < 0x100; guess++ {
 				guessByte := byte(guess)
 
-				var testBytes []byte = make([]byte, (blockIndex+2)*aes.BlockSize)
+				var testBytes = make([]byte, (blockIndex+2)*aes.BlockSize)
 				copy(testBytes, victimBytes)
 				testBytes[injectIndex] = victimBytes[injectIndex] ^ guessByte ^ byte(paddingCount)
 				for index := injectIndex + 1; index < (blockIndex+1)*aes.BlockSize; index++ {

@@ -23,6 +23,8 @@ func safeXORBytes(dst, a, b []byte) int {
 	return n
 }
 
+// ManyTimePaddingInteractiveCracker is an interactive cracker that stores necessary information to attack a
+// Many-time-padding
 type ManyTimePaddingInteractiveCracker struct {
 	target           string
 	targetText       []byte

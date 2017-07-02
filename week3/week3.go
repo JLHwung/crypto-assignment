@@ -21,7 +21,7 @@ func FileAuth(path string) [32]byte {
 	check(err)
 	defer f.Close()
 
-	const CHUNK_SIZE int64 = 1024
+	const ChunkSize int64 = 1024
 
 	info, err := f.Stat()
 	check(err)
@@ -33,14 +33,14 @@ func FileAuth(path string) [32]byte {
 		return sha256.Sum256([]byte(""))
 	}
 
-	var chunkNumber int64 = fileSize / CHUNK_SIZE
-	lastChunkSize := fileSize % CHUNK_SIZE
+	var chunkNumber int64 = fileSize / ChunkSize
+	lastChunkSize := fileSize % ChunkSize
 	if lastChunkSize == 0 {
-		lastChunkSize = CHUNK_SIZE
-		chunkNumber -= 1
+		lastChunkSize = ChunkSize
+		chunkNumber--
 	}
 
-	buf := make([]byte, CHUNK_SIZE)
+	buf := make([]byte, ChunkSize)
 	_, err = f.Seek(-lastChunkSize, 2)
 	check(err)
 
@@ -48,16 +48,16 @@ func FileAuth(path string) [32]byte {
 	if err != io.EOF {
 		check(err)
 	}
-	var bufArr []byte = buf[:lastChunkSize]
+	var bufArr = buf[:lastChunkSize]
 	hashBuf := sha256.Sum256(bufArr)
 
-	var offset int64 = -lastChunkSize - CHUNK_SIZE
-	for ; offset >= -fileSize; offset -= CHUNK_SIZE {
+	var offset int64 = -lastChunkSize - ChunkSize
+	for ; offset >= -fileSize; offset -= ChunkSize {
 		_, err = f.Seek(offset, 2)
 		check(err)
 		_, err = f.Read(buf)
 		check(err)
-		var bufArr []byte = buf[:]
+		var bufArr = buf[:]
 		hashBuf = sha256.Sum256(append(bufArr, hashBuf[:]...))
 	}
 

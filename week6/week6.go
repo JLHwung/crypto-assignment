@@ -12,26 +12,22 @@ func isSquareNumber(n *big.Int) (bool, *big.Int) {
 	return squareSqrtFloor.Cmp(n) == 0, sqrtFloor
 }
 
-/* FactorCloselyFactorSemiPrime finds p, q such that
-N = p*q when |p - q| < 2N^{1/4} and p <= q
-*/
+// FactorCloselyFactorSemiPrime finds p, q such that
+// N = p*q when |p - q| < 2N^{1/4} and p <= q
 func FactorCloselyFactorSemiPrime(N *big.Int) (*big.Int, *big.Int, error) {
 	return FactorNearlyFactorSemiPrime(N, 0)
 }
 
-/* FactorCloselyFactorSemiPrime finds p, q such that
-N = p*q when |p - q| < 2^{magnitude + 1} N^{1/4} and p <= q
-Notice that when magnitude = 1, it reduces to `FactorCloselyFactorSemiPrime`
-*/
-
+// FactorNearlyFactorSemiPrime finds p, q such that
+// N = p*q when |p - q| < 2^{magnitude + 1} N^{1/4} and p <= q
+// Notice that when magnitude = 1, it reduces to `FactorCloselyFactorSemiPrime`
 func FactorNearlyFactorSemiPrime(N *big.Int, magnitude uint) (*big.Int, *big.Int, error) {
 	return FactorProportionalFactorSemiPrime(N, magnitude, big.NewRat(1, 1))
 }
 
-/* FactorProportionalFactorSemiPrime finds p, q such that
-N = p*q when |ap - bq| < 2^{magnitude + 1} N^{1/4}, λ = a/b is a rational number
-Notice that when a = b = 1, it reduces to `FactorNearlyFactorSemiPrime`
-*/
+// FactorProportionalFactorSemiPrime finds p, q such that
+// N = p*q when |ap - bq| < 2^{magnitude + 1} N^{1/4}, λ = a/b is a rational number
+// Notice that when a = b = 1, it reduces to `FactorNearlyFactorSemiPrime`
 func FactorProportionalFactorSemiPrime(N *big.Int, magnitude uint, proportion *big.Rat) (*big.Int, *big.Int, error) {
 	// extract λ = a/b s.t. a, b is even
 	num := proportion.Num()
@@ -83,6 +79,8 @@ func FactorProportionalFactorSemiPrime(N *big.Int, magnitude uint, proportion *b
 	return nil, nil, errors.New("The factor is not closely enough for efficient factoring")
 }
 
+// DecryptRSAPKCSv15WithCloselyFactor will try to decrypt cipherText given RSA public key assuming the SemiPrimi can be
+// factored into two close prime
 func DecryptRSAPKCSv15WithCloselyFactor(pubKey *rsa.PublicKey, cipherText []byte) ([]byte, error) {
 	p, q, err := FactorCloselyFactorSemiPrime(pubKey.N)
 	one := big.NewInt(1)

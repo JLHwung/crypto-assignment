@@ -13,7 +13,8 @@ func UnPKCS7Padding(data []byte) []byte {
 	return data[:(length - padding)]
 }
 
-func CBC_decrypt(keyStr string, ciphertextStr string) []byte {
+// CBCDecrypt calls built-in CBC-mode decryption on keyString and cipher text string
+func CBCDecrypt(keyStr string, ciphertextStr string) []byte {
 	key, _ := hex.DecodeString(keyStr)
 	ciphertext, _ := hex.DecodeString(ciphertextStr)
 
@@ -32,7 +33,8 @@ func CBC_decrypt(keyStr string, ciphertextStr string) []byte {
 	return UnPKCS7Padding(ciphertext)
 }
 
-func CTR_decrypt(keyStr string, ciphertextStr string) []byte {
+// CTRDecrypt calls built-in CTR-mode decryption on keyString and cipher text string
+func CTRDecrypt(keyStr string, ciphertextStr string) []byte {
 	key, _ := hex.DecodeString(keyStr)
 	ciphertext, _ := hex.DecodeString(ciphertextStr)
 
